@@ -35,7 +35,11 @@ if (isset($_GET['hapus'])) {
     header('Location: '.BASE_URL.'skp_list.php'); exit;
 }
 
-$rows = mysqli_query($koneksi, "SELECT s.*, r.kode, r.nama AS nama_rek FROM skp s JOIN rekening r ON r.id=s.rekening_id ORDER BY s.tanggal DESC");
+$scope = scope_skpd(); // filter data per pengguna (mahasiswa) / semua (admin)
+
+$rows = mysqli_query($koneksi, "SELECT s.*, r.kode, r.nama AS nama_rek
+    FROM skp s JOIN rekening r ON r.id=s.rekening_id
+    WHERE $scope ORDER BY s.tanggal DESC");
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="row g-3">
@@ -50,7 +54,7 @@ include __DIR__ . '/includes/header.php';
             <select name="rekening_id" class="form-select form-select-sm" required>
               <option value="">-- pilih --</option>
               <?php
-              $rek = mysqli_query($koneksi, "SELECT * FROM rekening WHERE level=4 ORDER BY kode");
+              $rek = mysqli_query($koneksi, "SELECT * FROM rekening WHERE level=4 AND (skpd_id={$u['skpd_id']} OR skpd_id=0 OR $scope) ORDER BY kode");
               while($r=mysqli_fetch_assoc($rek)):
               ?><option value="<?= $r['id'] ?>"><?= $r['kode'] ?> — <?= htmlspecialchars($r['nama']) ?></option><?php endwhile; ?>
             </select></div>

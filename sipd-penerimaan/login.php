@@ -18,6 +18,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['nama']     = $user['nama'];
             $_SESSION['role']     = $user['role'];
             $_SESSION['skpd_id']  = $user['skpd_id'];
+            $_SESSION['nim']      = $user['nim'] ?? null;
+            $_SESSION['prodi']    = $user['prodi'] ?? null;
+            // Mahasiswa: ubah role operasional aktif dimulai bendahara + bisa semua role
+            if ($user['role'] === 'mahasiswa') {
+                $_SESSION['is_mahasiswa'] = true;
+                $_SESSION['active_role']  = 'bendahara';
+            } else {
+                $_SESSION['is_mahasiswa'] = false;
+                $_SESSION['active_role']  = $user['role'];
+            }
             header('Location: ' . BASE_URL . 'dashboard.php');
             exit();
         } else {
@@ -55,7 +65,9 @@ body{background:linear-gradient(135deg,#0f2a52,#1a3c6e);min-height:100vh;display
         <input type="password" class="form-control" name="password" required></div>
       <button class="btn btn-primary w-100"><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
     </form>
-    <div class="alert alert-info small mt-3 mb-0">
+    <div class="text-center mt-3 small">Belum punya akun SKPKD? <a href="register.php"><strong>Daftar Mahasiswa</strong></a></div>
+    <hr>
+    <div class="alert alert-info small mb-0">
       <strong>Akun demo</strong> — password semua: <code>123456</code>
       <ul class="mb-0 mt-1 ps-3">
         <li><code>bendahara</code> — Bendahara Penerimaan</li>

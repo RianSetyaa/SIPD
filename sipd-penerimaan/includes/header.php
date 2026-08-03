@@ -47,7 +47,7 @@ body { background:#f4f6f9; }
   <div class="group">Menu Utama</div>
   <a class="menu <?= $page=='dashboard.php'?'active':'' ?>" href="<?= BASE_URL ?>dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
 
-  <?php if (in_array($u['role'], ['bendahara','admin','ppk'])): ?>
+  <?php if (in_array($u['role'], ['bendahara','admin','ppk']) || is_mahasiswa()): ?>
   <div class="group">Penerimaan (Dokumen)</div>
   <a class="menu <?= in_array($page,['skp_list.php','skp_tambah.php'])?'active':'' ?>" href="<?= BASE_URL ?>skp_list.php"><i class="bi bi-file-earmark-text"></i> SKP (Penerbitan)</a>
   <a class="menu <?= in_array($page,['tbp_list.php','tbp_tambah.php'])?'active':'' ?>" href="<?= BASE_URL ?>tbp_list.php"><i class="bi bi-receipt"></i> TBP (Penerimaan)</a>
@@ -59,9 +59,14 @@ body { background:#f4f6f9; }
   <a class="menu <?= $page=='buku_kas.php'?'active':'' ?>" href="<?= BASE_URL ?>buku_kas.php"><i class="bi bi-book"></i> Buku Kas / Buku Pembantu</a>
   <a class="menu <?= $page=='laporan.php'?'active':'' ?>" href="<?= BASE_URL ?>laporan.php"><i class="bi bi-clipboard-data"></i> Laporan &amp; LPJ</a>
 
-  <?php if (in_array($u['role'], ['admin','ppk'])): ?>
+  <?php if (in_array($u['role'], ['admin','ppk']) || is_mahasiswa()): ?>
   <div class="group">Master Data</div>
   <a class="menu <?= $page=='master_rekening.php'?'active':'' ?>" href="<?= BASE_URL ?>master_rekening.php"><i class="bi bi-diagram-3"></i> Rekening Pendapatan</a>
+  <?php endif; ?>
+
+  <?php if ($u['role']=='admin' && !is_mahasiswa()): ?>
+  <div class="group">Admin / Dosen</div>
+  <a class="menu <?= $page=='daftar_mahasiswa.php'?'active':'' ?>" href="<?= BASE_URL ?>daftar_mahasiswa.php"><i class="bi bi-people"></i> Daftar Mahasiswa</a>
   <?php endif; ?>
 
   <hr style="border-color:rgba(255,255,255,.15)">
@@ -75,7 +80,23 @@ body { background:#f4f6f9; }
       <small class="text-muted"><?= APP_FULL ?> — <?= $u['nama'] ?></small>
     </div>
     <div class="d-flex align-items-center gap-2">
+      <?php if (is_mahasiswa()): ?>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-workspace"></i> Peran: <strong><?= ucfirst(active_role()) ?></strong>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><span class="dropdown-header">Ganti peran aktif (role)</span></li>
+          <li><a class="dropdown-item <?= active_role()=='bendahara'?'active':'' ?>" href="<?= BASE_URL ?>ganti_role.php?role=bendahara"><i class="bi bi-wallet2"></i> Bendahara Penerimaan</a></li>
+          <li><a class="dropdown-item <?= active_role()=='verifikator'?'active':'' ?>" href="<?= BASE_URL ?>ganti_role.php?role=verifikator"><i class="bi bi-patch-check"></i> Verifikator</a></li>
+          <li><a class="dropdown-item <?= active_role()=='ppk'?'active':'' ?>" href="<?= BASE_URL ?>ganti_role.php?role=ppk"><i class="bi bi-briefcase"></i> Pejabat Penatausahaan</a></li>
+        </ul>
+      </div>
+      <?php endif; ?>
       <span class="badge bg-primary"><?= ucfirst($u['role']) ?></span>
+      <?php if (is_mahasiswa() && $u['nim']): ?>
+        <span class="badge bg-secondary"><?= htmlspecialchars($u['nim']) ?></span>
+      <?php endif; ?>
     </div>
   </div>
   <?php flash(); ?>

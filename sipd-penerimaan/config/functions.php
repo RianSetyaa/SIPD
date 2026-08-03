@@ -16,16 +16,44 @@ function require_login() {
     }
 }
 
+function active_role() {
+    // Role aktif (bisa berpindah-pindah untuk mahasiswa)
+    if (isset($_SESSION['active_role'])) return $_SESSION['active_role'];
+    if (isset($_SESSION['role'])) return $_SESSION['role'];
+    return 'bendahara';
+}
+
+function is_mahasiswa() {
+    return isset($_SESSION['is_mahasiswa']) && $_SESSION['is_mahasiswa'];
+}
+
 function require_role($roles) {
     if (!is_logged_in()) {
         header('Location: ' . BASE_URL . 'login.php');
         exit();
     }
-    if (!in_array($_SESSION['role'], (array)$roles)) {
+    $allowed = (array)$roles;
+
+    // Mahasiswa boleh menjalankan semua peran operasional (bendahara/verifikator/ppk)
+    // tetapi TIDAK diberi akses ke halaman khusus admin (hanya berisi 'admin').
+    if (is_mahasiswa()) {
+        $operasional = array_intersect($allowed, ['bendahara', 'verifikator', 'ppk']);
+        if (!empty($operasional)) {
+            return; // izinkan mahasiswa
+        }
+        // Halaman ini hanya untuk admin
         flash_error('Anda tidak memiliki hak akses untuk halaman ini.');
         header('Location: ' . BASE_URL . 'dashboard.php');
         exit();
     }
+
+    // Non-mahasiswa: izinkan bila role dasar (admin/ppk) atau role aktif cocok
+    if (in_array($_SESSION['role'], $allowed) || in_array(active_role(), $allowed)) {
+        return;
+    }
+    flash_error('Anda tidak memiliki hak akses untuk halaman ini.');
+    header('Location: ' . BASE_URL . 'dashboard.php');
+    exit();
 }
 
 // ---------- FORMAT ----------
@@ -114,8 +142,8 @@ function catat_jurnal_skp($skp_id) {
 
     $jl = $skp['jumlah'];
 
-    mysqli_query($koneksi, "INSERT INTO jurnal (tanggal, jenis, ref_id, no_dokumen, uraian)
-        VALUES ('{$skp['tanggal']}','SKP',{$skp['id']},'{$skp['no_skp']}','SKP {$skp['no_skp']}')");
+    mysqli_query($koneksi, "INSERT INTO jurnal (skpd_id, tanggal, jenis, ref_id, no_dokumen, uraian)
+        VALUES ({$skp['skpd_id']},'{$skp['tanggal']}','SKP',{$skp['id']},'{$skp['no_skp']}','SKP {$skp['no_skp']}')");
     $jid = mysqli_insert_id($koneksi);
 
     // Dr Piutang Pajak
@@ -135,8 +163,8 @@ function catat_jurnal_tbp($tbp_id) {
 
     $jl = $tbp['jumlah'];
 
-    mysqli_query($koneksi, "INSERT INTO jurnal (tanggal, jenis, ref_id, no_dokumen, uraian)
-        VALUES ('{$tbp['tanggal']}','TBP',{$tbp['id']},'{$tbp['no_tbp']}','TBP {$tbp['no_tbp']}')");
+    mysqli_query($koneksi, "INSERT INTO jurnal (skpd_id, tanggal, jenis, ref_id, no_dokumen, uraian)
+        VALUES ({$tbp['skpd_id']},'{$tbp['tanggal']}','TBP',{$tbp['id']},'{$tbp['no_tbp']}','TBP {$tbp['no_tbp']}')");
     $jid = mysqli_insert_id($koneksi);
 
     // Dr Kas di Bendahara
@@ -156,8 +184,8 @@ function catat_jurnal_sts($sts_id) {
 
     $jl = $sts['jumlah'];
 
-    mysqli_query($koneksi, "INSERT INTO jurnal (tanggal, jenis, ref_id, no_dokumen, uraian)
-        VALUES ('{$sts['tanggal']}','STS',{$sts['id']},'{$sts['no_sts']}','STS {$sts['no_sts']}')");
+    mysqli_query($koneksi, "INSERT INTO jurnal (skpd_id, tanggal, jenis, ref_id, no_dokumen, uraian)
+        VALUES ({$sts['skpd_id']},'{$sts['tanggal']}','STS',{$sts['id']},'{$sts['no_sts']}','STS {$sts['no_sts']}')");
     $jid = mysqli_insert_id($koneksi);
 
     // Dr Kas di Kas Daerah (LO)

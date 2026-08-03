@@ -78,6 +78,36 @@ STS disetor →  Dr. Kas di Kas Daerah         Cr. Kas di Bendahara (LO)
 
 ---
 
+## Sistem Multi-Mahasiswa & Multi-Daerah
+
+Aplikasi mendukung **banyak mahasiswa** yang mendaftar dan mengerjakan **daerah (SKPKD)
+masing-masing yang terpisah**. Data setiap mahasiswa **tidak tercampur**.
+
+### Alur Penggunaan
+1. **Daftar** lewat halaman `register.php` — isi nama, NIM, prodi, dan pilih **nama daerah
+   (Kab/Kota)**. Sistem otomatis membuat SKPKD milik mahasiswa tersebut beserta rekening
+   pendapatan standar.
+2. **Login** sebagai mahasiswa → otomatis berperan **Bendahara** pertama.
+3. Gunakan **pemilih peran (role switcher)** di pojok kanan atas untuk berlatih semua posisi:
+   **Bendahara → Verifikator → PPK** — semuanya memakai data SKPKD miliknya sendiri.
+4. Admin/dosen dapat melihat **semua mahasiswa & ringkasan data** lewat menu *Daftar Mahasiswa*.
+
+### Bagaimana data dipisahkan
+- Setiap mahasiswa memiliki **1 SKPKD (daerah) sendiri** yang ditandai pemilik (`owner_id`).
+- Semua dokumen (SKP/TBP/STS) dan jurnal melekat pada `skpd_id` pemilik.
+- Saat login, aplikasi hanya menampilkan transaksi `skpd_id` milik user tersebut (kecuali admin).
+
+### Akun
+| Username | Password | Peran |
+|----------|----------|-------|
+| `bendahara` | `123456` | Bendahara Penerimaan (SKPKD contoh Cimahi) |
+| `verifikator` | `123456` | Verifikator |
+| `ppk` | `123456` | Pejabat Penatausahaan |
+| `admin` | `123456` | Administrator / Dosen (melihat semua) |
+| *(mahasiswa daftar sendiri)* | ditentukan saat daftar | Mahasiswa — bisa semua peran |
+
+---
+
 ## Akun Demo (password semua: `123456`)
 
 | Username | Role |

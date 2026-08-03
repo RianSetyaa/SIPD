@@ -4,6 +4,8 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 require_login();
 require_role(['admin','ppk']);
+$u = current_user();
+$scope = scope_skpd();
 
 if (isset($_POST['simpan'])) {
     $kode = sanitize($_POST['kode']);
@@ -11,16 +13,17 @@ if (isset($_POST['simpan'])) {
     $level= (int)$_POST['level'];
     $induk= sanitize($_POST['induk_kode'] ?: '');
     $induk_sql = "NULL"; if($induk!=='') $induk_sql = "'$induk'";
-    mysqli_query($koneksi, "INSERT INTO rekening (kode,nama,level,induk_kode,skpd_id) VALUES ('$kode','$nama',$level,$induk_sql,1)");
+    $skpd = (int)$u['skpd_id'];
+    mysqli_query($koneksi, "INSERT INTO rekening (kode,nama,level,induk_kode,skpd_id) VALUES ('$kode','$nama',$level,$induk_sql,$skpd)");
     flash_success('Rekening ditambahkan.');
     header('Location: '.BASE_URL.'master_rekening.php'); exit;
 }
 if (isset($_GET['hapus'])) {
-    mysqli_query($koneksi, "DELETE FROM rekening WHERE id=".(int)$_GET['hapus']);
+    mysqli_query($koneksi, "DELETE FROM rekening WHERE id=".(int)$_GET['hapus']." AND $scope");
     flash_success('Dihapus.');
     header('Location: '.BASE_URL.'master_rekening.php'); exit;
 }
-$rows = mysqli_query($koneksi, "SELECT * FROM rekening ORDER BY kode");
+$rows = mysqli_query($koneksi, "SELECT * FROM rekening WHERE $scope ORDER BY kode");
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="row g-3">

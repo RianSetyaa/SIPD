@@ -3,6 +3,8 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 require_login();
+$u = current_user();
+$scope = scope_skpd_alias('st');
 
 // Filter bulan
 $tahun = $_GET['tahun'] ?? date('Y');
@@ -14,7 +16,7 @@ if ($bulan !== '' && $bulan !== '') {
 }
 $sts = mysqli_query($koneksi, "SELECT st.*, t.no_tbp, s.no_skp, s.wajib_pajak, r.kode, r.nama nama_rek, s.rekening_id
     FROM sts st JOIN tbp t ON t.id=st.tbp_id JOIN skp s ON s.id=t.skp_id JOIN rekening r ON r.id=s.rekening_id
-    WHERE 1=1 $where ORDER BY st.tanggal");
+    WHERE $scope $where ORDER BY st.tanggal");
 
 include __DIR__ . '/includes/header.php';
 ?>

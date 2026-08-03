@@ -3,11 +3,13 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 require_login();
+$u = current_user();
+$scope = scope_skpd_alias('st');
 
 // Ambil STS sebagai penerimaan kas (per dagang), dan TBP (kas bendahara)
 $sts = mysqli_query($koneksi, "SELECT st.id, st.tanggal, st.no_sts, st.jumlah, r.nama nama_rek, r.kode FROM sts st
     JOIN tbp t ON t.id=st.tbp_id JOIN skp s ON s.id=t.skp_id JOIN rekening r ON r.id=s.rekening_id
-    ORDER BY st.tanggal, st.id");
+    WHERE $scope ORDER BY st.tanggal, st.id");
 
 $kumpul = array();
 while($r=mysqli_fetch_assoc($sts)) $kumpul[] = $r;
@@ -42,7 +44,7 @@ include __DIR__ . '/includes/header.php';
         <?php
         $rekap = mysqli_query($koneksi, "SELECT r.kode, r.nama, SUM(st.jumlah) total FROM sts st
             JOIN tbp t ON t.id=st.tbp_id JOIN skp s ON s.id=t.skp_id JOIN rekening r ON r.id=s.rekening_id
-            GROUP BY r.id, r.kode, r.nama ORDER BY r.kode");
+            WHERE $scope GROUP BY r.id, r.kode, r.nama ORDER BY r.kode");
         $grand=0;
         ?>
         <table class="table table-sm">

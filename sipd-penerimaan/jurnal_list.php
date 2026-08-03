@@ -3,8 +3,10 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/functions.php';
 require_login();
+$u = current_user();
+$scope = scope_skpd();
 
-$rows = mysqli_query($koneksi, "SELECT * FROM jurnal ORDER BY tanggal, id");
+$rows = mysqli_query($koneksi, "SELECT j.* FROM jurnal j WHERE $scope ORDER BY j.tanggal, j.id");
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="card card-modul">

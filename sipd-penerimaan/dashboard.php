@@ -5,7 +5,7 @@ require_once __DIR__ . '/config/functions.php';
 require_login();
 
 $u = current_user();
-$skpd_scope = ($u['role']=='admin') ? '' : "WHERE skpd_id={$u['skpd_id']}";
+$skpd_scope = ($u['role']=='admin' && !is_mahasiswa()) ? '' : "WHERE skpd_id={$u['skpd_id']}";
 
 $tot_skp = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT IFNULL(SUM(jumlah),0) t, COUNT(*) c FROM skp $skpd_scope"));
 $tot_tbp = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT IFNULL(SUM(jumlah),0) t, COUNT(*) c FROM tbp $skpd_scope"));

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS skpd (
     kepala VARCHAR(120) DEFAULT NULL,
     bendahara_penerimaan VARCHAR(120) DEFAULT NULL,
     nip_bendahara VARCHAR(40) DEFAULT NULL,
+    owner_id INT DEFAULT NULL,            -- pemilik skpd (mahasiswa)
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -30,7 +31,9 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     nama VARCHAR(120) NOT NULL,
     skpd_id INT DEFAULT NULL,
-    role ENUM('admin','bendahara','verifikator','ppk') DEFAULT 'bendahara',
+    role ENUM('admin','bendahara','verifikator','ppk','mahasiswa') DEFAULT 'bendahara',
+    nim VARCHAR(40) DEFAULT NULL,
+    prodi VARCHAR(120) DEFAULT NULL,
     is_active TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (skpd_id) REFERENCES skpd(id) ON DELETE SET NULL
@@ -42,12 +45,13 @@ CREATE TABLE IF NOT EXISTS users (
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS rekening (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    kode VARCHAR(30) NOT NULL UNIQUE,          -- contoh 4.1.1.01.01
+    kode VARCHAR(30) NOT NULL,              -- contoh 4.1.1.01.01
     nama VARCHAR(250) NOT NULL,
     level INT DEFAULT 1,                        -- 1=kelompok,2=jenis,... 5=rincian
     induk_kode VARCHAR(30) DEFAULT NULL,
     jenis ENUM('PAD','DANA_PERIMBANGAN','LAIN_PENDAPATAN') DEFAULT 'PAD',
     skpd_id INT DEFAULT NULL,
+    UNIQUE KEY uq_rek_kode_skpd (kode, skpd_id),  -- kode boleh sama antar SKPKD berbeda
     FOREIGN KEY (skpd_id) REFERENCES skpd(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
@@ -124,6 +128,7 @@ CREATE TABLE IF NOT EXISTS sts (
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS jurnal (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    skpd_id INT DEFAULT NULL,
     no_jurnal VARCHAR(50) DEFAULT NULL,
     tanggal DATE NOT NULL,
     jenis ENUM('SKP','TBP','STS') NOT NULL,

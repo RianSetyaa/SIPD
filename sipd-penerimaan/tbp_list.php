@@ -5,6 +5,7 @@ require_once __DIR__ . '/config/functions.php';
 require_login();
 require_role(['bendahara','admin','ppk']);
 $u = current_user();
+$scope = scope_skpd();
 
 if (isset($_POST['simpan'])) {
     $tanggal = $_POST['tanggal'];
@@ -45,10 +46,10 @@ if (isset($_GET['hapus'])) {
 $skp_belum = mysqli_query($koneksi, "SELECT s.*, r.kode, r.nama nama_rek FROM skp s
     JOIN rekening r ON r.id=s.rekening_id
     LEFT JOIN tbp t ON t.skp_id=s.id
-    WHERE t.id IS NULL ORDER BY s.tanggal");
+    WHERE t.id IS NULL AND $scope ORDER BY s.tanggal");
 $rows = mysqli_query($koneksi, "SELECT t.*, s.no_skp, s.wajib_pajak, r.kode, r.nama nama_rek
     FROM tbp t JOIN skp s ON s.id=t.skp_id JOIN rekening r ON r.id=s.rekening_id
-    ORDER BY t.tanggal DESC");
+    WHERE $scope ORDER BY t.tanggal DESC");
 include __DIR__ . '/includes/header.php';
 ?>
 <div class="row g-3">
