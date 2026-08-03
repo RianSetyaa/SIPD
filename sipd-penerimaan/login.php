@@ -66,16 +66,6 @@ body{background:linear-gradient(135deg,#0f2a52,#1a3c6e);min-height:100vh;display
       <button class="btn btn-primary w-100"><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
     </form>
     <div class="text-center mt-3 small">Belum punya akun SKPKD? <a href="register.php"><strong>Daftar Mahasiswa</strong></a></div>
-    <hr>
-    <div class="alert alert-info small mb-0">
-      <strong>Akun demo</strong> — password semua: <code>123456</code>
-      <ul class="mb-0 mt-1 ps-3">
-        <li><code>bendahara</code> — Bendahara Penerimaan</li>
-        <li><code>verifikator</code> — Verifikator</li>
-        <li><code>ppk</code> — Pejabat Penatausahaan</li>
-        <li><code>admin</code> — Administrator</li>
-      </ul>
-    </div>
   </div>
 </div>
 </body>
