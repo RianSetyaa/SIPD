@@ -1,0 +1,3 @@
+# Lindungi folder database dari akses web
+Require all denied
+Options -Indexes

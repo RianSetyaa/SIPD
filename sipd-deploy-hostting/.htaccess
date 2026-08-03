@@ -1,0 +1,31 @@
+# ============================================================
+# SIPD Penatausahaan - Konfigurasi Apache (hosting)
+# ============================================================
+Options -Indexes
+DirectoryIndex index.php
+
+# Lindungi folder config & database dari akses web langsung
+<FilesMatch "\.(sql|ini|log)$">
+  Require all denied
+</FilesMatch>
+
+# Blokir akses langsung ke file konfigurasi melalui URL
+<Files "config/config.php">
+  Require all denied
+</Files>
+
+# Aktifkan jika mod_rewrite tersedia (bermanfaat untuk fleksibilitas)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Sembunyikan install.php setelah fitur berhasil dijalankan (opsional)
+</IfModule>
+
+# Menambah keamanan header dasar
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Batasi ukuran upload ke 10MB
+php_value upload_max_filesize 10M
+php_value post_max_size 12M
